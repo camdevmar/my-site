@@ -3,16 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Site</title>
+  <title>🎂 PARTY TIME 🎉</title>
   <style>
-    body { font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; background: #f4f6f8; color: #222; }
-    main { text-align: center; padding: 2rem; }
+    html, body { margin: 0; height: 100%; overflow: hidden; cursor: crosshair; }
+
+    /* Psychedelic color-cycling background (smooth, not strobing) */
+    body {
+      background: linear-gradient(120deg, #ff0080, #ff8c00, #ffee00, #00ff6a, #00cfff, #7a00ff, #ff0080);
+      background-size: 400% 400%;
+      animation: bg 6s linear infinite;
+      display: grid;
+      place-items: center;
+    }
+    @keyframes bg { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+
+    /* Spinning disco rays behind the cake */
+    .rays {
+      position: fixed; top: 50%; left: 50%;
+      width: 220vmax; height: 220vmax;
+      margin: -110vmax 0 0 -110vmax;
+      background: repeating-conic-gradient(rgba(255,255,255,.28) 0 10deg, rgba(255,255,255,0) 10deg 20deg);
+      animation: spin 12s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* The cake: bounces, wobbles, and hue-shifts */
+    #cake {
+      position: relative; z-index: 2;
+      max-width: 70vmin; max-height: 70vmin;
+      border: 8px ridge gold;
+      border-radius: 12px;
+      box-shadow: 0 0 40px 10px #fff, 0 0 90px 30px hotpink;
+      animation: bounce .7s ease-in-out infinite alternate, wobble 1.4s ease-in-out infinite alternate, hue 3s linear infinite;
+    }
+    @keyframes bounce { from { translate: 0 -4vmin; } to { translate: 0 4vmin; } }
+    @keyframes wobble { from { rotate: -6deg; scale: 1; } to { rotate: 6deg; scale: 1.08; } }
+    @keyframes hue { to { filter: hue-rotate(360deg); } }
+
+    canvas { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      body, .rays, #cake { animation: none; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Hello, GitHub Pages!</h1>
-    <p>My sample page is live.</p>
-  </main>
+  <div class="rays"></div>
+  <img id="cake" src="cake.gif" alt="A birthday cake">
+  <canvas id="fx"></canvas>
+
+  <script>
+    const c = document.getElementById('fx'), x = c.getContext('2d');
+    const resize = () => { c.width = innerWidth; c.height = innerHeight; };
+    resize(); addEventListener('resize', resize);
+
+    const colors = ['#ff0080','#ffee00','#00ff6a','#00cfff','#ffffff','#ff8c00','#b400ff'];
+    const rand = (a, b) => a + Math.random() * (b - a);
+    let bits = [];
+
+    // Confetti rain from the top
+    function confetti(n, px, py) {
+      for (let i = 0; i < n; i++) bits.push({
+        x: px ?? rand(0, c.width), y: py ?? -10,
+        vx: rand(-2, 2) * (px ? 3 : 1), vy: px ? rand(-8, 2) : rand(2, 6),
+        s: rand(6, 14), r: rand(0, 6.28), vr: rand(-.3, .3),
+        col: colors[(Math.random() * colors.length) | 0], life: px ? 70 : 9999
+      });
+    }
+
+    // Sparkle trail behind the mouse / finger
+    addEventListener('pointermove', e => confetti(3, e.clientX, e.clientY));
+    // Click or tap = confetti explosion
+    addEventListener('pointerdown', e => confetti(80, e.clientX, e.clientY));
+
+    // Occasional firework-style bursts at random spots
+    setInterval(() => confetti(60, rand(.1, .9) * c.width, rand(.1, .6) * c.height), 1400);
+
+    (function loop() {
+      x.clearRect(0, 0, c.width, c.height);
+      if (Math.random() < .6) confetti(2);
+      bits = bits.filter(b => b.y < c.height + 20 && b.life > 0);
+      for (const b of bits) {
+        b.x += b.vx; b.y += b.vy; b.vy += .12; b.r += b.vr; b.life--;
+        x.save(); x.translate(b.x, b.y); x.rotate(b.r);
+        x.fillStyle = b.col; x.fillRect(-b.s / 2, -b.s / 4, b.s, b.s / 2);
+        x.restore();
+      }
+      requestAnimationFrame(loop);
+    })();
+  </script>
 </body>
 </html>
