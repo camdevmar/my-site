@@ -1,0 +1,37 @@
+[
+  {
+    "id": "000-example-person",
+    "name": "Jane Example",
+    "app": "Recipe Keeper",
+    "tagline": "A calm little app for a very busy kitchen",
+    "date": "2026-11-01",
+    "story": "Jane runs a small bakery and kept her recipes on sticky notes, scraps of paper and three different phones.\n\nShe wanted one place where she could scale a recipe up for a wedding order, or down for a Tuesday, without doing math with flour on her hands.\n\nI built her a simple app that stores every recipe, rescales ingredients with one tap, and works offline in the kitchen.\n\n(This is an example project. Delete the folder `projects/000-example-person` when you add your first real one.)",
+    "links": [
+      {
+        "label": "Download for Windows",
+        "url": "https://example.com/recipe-keeper.zip",
+        "kind": "download"
+      },
+      {
+        "label": "Source on GitHub",
+        "url": "https://github.com/camdevmar",
+        "kind": "link"
+      }
+    ],
+    "photo": "projects/000-example-person/photo.svg",
+    "media": [
+      {
+        "type": "image",
+        "src": "projects/000-example-person/media/01-screen.svg"
+      },
+      {
+        "type": "image",
+        "src": "projects/000-example-person/media/02-screen.svg"
+      },
+      {
+        "type": "image",
+        "src": "projects/000-example-person/media/03-screen.svg"
+      }
+    ]
+  }
+]

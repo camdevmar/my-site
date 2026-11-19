@@ -1,0 +1,14 @@
+name: Jane Example
+app: Recipe Keeper
+tagline: A calm little app for a very busy kitchen
+date: 2026-11-01
+download: Download for Windows | https://example.com/recipe-keeper.zip
+link: Source on GitHub | https://github.com/camdevmar
+---
+Jane runs a small bakery and kept her recipes on sticky notes, scraps of paper and three different phones.
+
+She wanted one place where she could scale a recipe up for a wedding order, or down for a Tuesday, without doing math with flour on her hands.
+
+I built her a simple app that stores every recipe, rescales ingredients with one tap, and works offline in the kitchen.
+
+(This is an example project. Delete the folder `projects/000-example-person` when you add your first real one.)

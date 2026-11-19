@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apps I've Made</title>
+<meta name="description" content="A showcase of apps I've built for people.">
+<style>
+  :root {
+    --bg: #0f1020; --bg2: #171933; --card: #1d2040; --text: #eceefb; --muted: #a3a8cf;
+    --accent: #8b7bff; --accent2: #5ee0c1; --border: rgba(255,255,255,.09);
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #f5f5fc; --bg2: #ebebf8; --card: #fff; --text: #1b1d3a; --muted: #5d628c; --border: rgba(20,20,60,.1); --accent: #6a58f2; --accent2: #0fa88a; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+  header.hero { text-align: center; padding: 64px 20px 28px; background: radial-gradient(ellipse at top, var(--bg2), var(--bg) 70%); }
+  .hero h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.02em; }
+  .hero p { margin: 10px auto 0; max-width: 520px; color: var(--muted); }
+
+  nav#people { position: sticky; top: 0; z-index: 10; display: flex; gap: 14px; overflow-x: auto; padding: 12px 20px; justify-content: safe center;
+    background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+  nav#people a { flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 64px; color: var(--muted); text-decoration: none; font-size: .7rem; text-align: center; line-height: 1.2; }
+  nav#people a:hover, nav#people a.active { color: var(--text); }
+  nav#people img, .ph { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; background: var(--card); }
+  nav#people a.active img, nav#people a:hover img { border-color: var(--accent); }
+  nav#people span { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  main { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+  section.project { padding: 64px 0 24px; border-bottom: 1px solid var(--border); }
+  section.project:last-child { border-bottom: 0; }
+
+  .person { text-align: center; }
+  .person img, .person .ph { width: 150px; height: 150px; border: 4px solid var(--accent); box-shadow: 0 8px 30px rgba(0,0,0,.3); }
+  .person h2 { margin: 14px 0 0; font-size: 1.6rem; }
+
+  .intent { position: relative; margin: 26px auto 0; max-width: 680px; padding: 24px 28px 22px; background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+  .intent .label { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  .intent p { margin: 0 0 .8em; }
+  .intent p:last-child { margin-bottom: 0; }
+
+  .app { margin-top: 40px; }
+  .app h3 { margin: 0; font-size: 1.35rem; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }
+  .app .tagline { margin: 2px 0 0; color: var(--muted); }
+  .gallery { display: flex; gap: 14px; overflow-x: auto; padding: 18px 2px 12px; scroll-snap-type: x proximity; }
+  .gallery > * { flex: none; height: 260px; max-width: 85vw; border-radius: 12px; border: 1px solid var(--border); background: var(--card); scroll-snap-align: start; object-fit: contain; }
+  .gallery img { cursor: zoom-in; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: .95rem; border: 1px solid var(--accent); color: var(--text); }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+
+  #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; place-items: center; z-index: 50; cursor: zoom-out; padding: 20px; }
+  #lightbox.open { display: grid; }
+  #lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+
+  .empty { text-align: center; color: var(--muted); padding: 80px 0; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>Apps I've Made</h1>
+  <p>Small tools, built for real people. Here's who each one was for, why, and what came out of it.</p>
+</header>
+<nav id="people" aria-label="Projects"></nav>
+<main id="projects"></main>
+<div id="lightbox" role="dialog" aria-label="Image preview"><img alt=""></div>
+<footer>Built with care.</footer>
+
+<script>
+(async function () {
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  const safeUrl = (u) => /^https?:\/\//i.test(u) || /^[\w./-]+$/.test(u) ? u : '#';
+
+  let data = [];
+  try {
+    const r = await fetch('projects/index.json', { cache: 'no-cache' });
+    data = await r.json();
+  } catch (e) { /* fall through to empty state */ }
+
+  const main = $('#projects'), nav = $('#people');
+  if (!data.length) { main.appendChild(el('div', 'empty', 'No projects yet. Check back soon!')); return; }
+
+  const avatar = (p, cls) => {
+    if (!p.photo) { const d = el('div', 'ph'); return d; }
+    const i = el('img', cls); i.src = p.photo; i.alt = p.name; i.loading = 'lazy'; return i;
+  };
+
+  data.forEach((p) => {
+    // nav chip
+    const a = el('a'); a.href = '#' + p.id; a.dataset.id = p.id;
+    a.appendChild(avatar(p)); a.appendChild(el('span', '', p.name));
+    nav.appendChild(a);
+
+    // project section
+    const s = el('section', 'project'); s.id = p.id;
+
+    const person = el('div', 'person');
+    person.appendChild(avatar(p));
+    person.appendChild(el('h2', '', p.name));
+    s.appendChild(person);
+
+    if (p.story) {
+      const box = el('div', 'intent');
+      box.appendChild(el('div', 'label', 'The idea'));
+      p.story.split(/\n\s*\n/).forEach((para) => box.appendChild(el('p', '', para.trim())));
+      s.appendChild(box);
+    }
+
+    const app = el('div', 'app');
+    if (p.app) app.appendChild(el('h3', '', p.app));
+    if (p.tagline) app.appendChild(el('p', 'tagline', p.tagline));
+
+    if (p.media.length) {
+      const g = el('div', 'gallery');
+      p.media.forEach((m) => {
+        if (m.type === 'video') {
+          const v = el('video'); v.src = m.src; v.controls = true; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata'; g.appendChild(v);
+        } else {
+          const i = el('img'); i.src = m.src; i.alt = (p.app || p.name) + ' screenshot'; i.loading = 'lazy';
+          i.onclick = () => { const lb = $('#lightbox'); lb.querySelector('img').src = m.src; lb.classList.add('open'); };
+          g.appendChild(i);
+        }
+      });
+      app.appendChild(g);
+    }
+
+    if (p.links.length) {
+      const l = el('div', 'links');
+      p.links.forEach((k) => {
+        const b = el('a', 'btn' + (k.kind === 'download' ? ' primary' : ''), (k.kind === 'download' ? '⬇ ' : '↗ ') + k.label);
+        b.href = safeUrl(k.url); b.target = '_blank'; b.rel = 'noopener';
+        l.appendChild(b);
+      });
+      app.appendChild(l);
+    }
+    s.appendChild(app);
+    main.appendChild(s);
+  });
+
+  // lightbox
+  const lb = $('#lightbox');
+  lb.onclick = () => lb.classList.remove('open');
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+  // highlight current person in nav
+  const chips = [...nav.children];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      chips.forEach((c) => c.classList.toggle('active', c.dataset.id === en.target.id));
+      const act = chips.find((c) => c.classList.contains('active'));
+      if (act) nav.scrollTo({ left: act.offsetLeft - nav.clientWidth / 2 + 32, behavior: 'smooth' });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('section.project').forEach((s) => io.observe(s));
+})();
+</script>
+</body>
+</html>
